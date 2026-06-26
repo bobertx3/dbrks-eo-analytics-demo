@@ -77,7 +77,7 @@ Content-Type: application/json
   "attachments": [
     {
       "query": {
-        "query": "WITH ranked_incidents AS (\n  SELECT *,\n    RANK() OVER (ORDER BY severity DESC, impact_score DESC) AS rank\n  FROM `bx4`.`eo_analytics_plane`.`silver_incidents`\n  WHERE severity IS NOT NULL AND impact_score IS NOT NULL\n)\nSELECT incident_id, title, severity, impact_score, created_at, status\nFROM ranked_incidents\nWHERE rank <= 10",
+        "query": "WITH ranked_incidents AS (\n  SELECT *,\n    RANK() OVER (ORDER BY severity DESC, impact_score DESC) AS rank\n  FROM `bldemos`.`eo_analytics`.`silver_incidents`\n  WHERE severity IS NOT NULL AND impact_score IS NOT NULL\n)\nSELECT incident_id, title, severity, impact_score, created_at, status\nFROM ranked_incidents\nWHERE rank <= 10",
         "description": "You want to see the top 10 incidents...",
         "statement_id": "01f12b0f-711a-122c-a895-b1b37adf0b41",
         "query_result_metadata": {
@@ -146,7 +146,7 @@ The backend fallback mechanism is working correctly:
 Fallback would work if Genie parsing fails, but the Genie API is not the issue—the parsing is.
 
 ## Files Affected
-- **Primary**: `/Users/robert.leach/dev/vibe/jnj-eo-analytics-demo/rca_app/backend/routes/genie.py`
+- **Primary**: `/Users/robert.leach/dev/vibe/dbrks-eo-analytics-demo/rca_app/backend/routes/genie.py`
   - Function: `_extract_genie_answer()` (lines 140-164)
   - Function: `_poll_genie_result()` (lines 108-132)
 

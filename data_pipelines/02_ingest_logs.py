@@ -4,10 +4,10 @@
 
 # COMMAND ----------
 # MAGIC %sql
-# MAGIC CREATE OR REPLACE TABLE bx4.eo_analytics_plane.bronze_logs AS
+# MAGIC CREATE OR REPLACE TABLE bldemos.eo_analytics.bronze_logs AS
 # MAGIC WITH raw AS (
 # MAGIC   SELECT explode(resourceLogs) as rl
-# MAGIC   FROM json.`/Volumes/bx4/eo_analytics_plane/raw_landing/logs/`
+# MAGIC   FROM json.`/Volumes/bldemos/eo_analytics/raw_landing/logs/`
 # MAGIC ),
 # MAGIC with_scope AS (
 # MAGIC   SELECT rl.resource.attributes as resource_attrs, explode(rl.scopeLogs) as sl FROM raw

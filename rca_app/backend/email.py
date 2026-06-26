@@ -10,7 +10,7 @@ import requests
 
 logger = logging.getLogger(__name__)
 
-SECRET_SCOPE = "jnj-eo-analytics-demo"
+SECRET_SCOPE = "dbrks-eo-analytics-demo"
 IS_DATABRICKS_APP = bool(os.environ.get("DATABRICKS_APP_NAME"))
 
 # Lazy-loaded config (populated on first send)

@@ -16,8 +16,8 @@ from datetime import datetime, timedelta, timezone
 from databricks.sdk import WorkspaceClient
 
 PROFILE = os.environ.get("DATABRICKS_PROFILE", "DEFAULT")
-CATALOG = "jnj_eo_demo"
-SCHEMA = "eo_analytics_plane"
+CATALOG = os.environ.get("CATALOG", "bldemos")
+SCHEMA = os.environ.get("SCHEMA", "eo_analytics")
 VOLUME_PATH = f"/Volumes/{CATALOG}/{SCHEMA}/raw_landing"
 
 random.seed(42)

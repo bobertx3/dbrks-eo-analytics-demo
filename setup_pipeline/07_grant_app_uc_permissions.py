@@ -6,9 +6,9 @@ Usage:
   DATABRICKS_PROFILE=DEFAULT python setup/05_grant_app_uc_permissions.py
 
 Optional env vars:
-  APP_NAME=jnj-eo-analytics-demo
-  CATALOG=bx4
-  SCHEMA=eo_analytics_plane
+  APP_NAME=dbrks-eo-analytics-demo
+  CATALOG=bldemos
+  SCHEMA=eo_analytics
   DATABRICKS_WAREHOUSE_ID=<warehouse_id>
 """
 import os
@@ -18,9 +18,9 @@ from databricks.sdk.service.sql import StatementState
 
 
 PROFILE = os.environ.get("DATABRICKS_PROFILE", "DEFAULT")
-APP_NAME = os.environ.get("APP_NAME", "jnj-eo-analytics-demo")
-CATALOG = os.environ.get("CATALOG", "bx4")
-SCHEMA = os.environ.get("SCHEMA", "eo_analytics_plane")
+APP_NAME = os.environ.get("APP_NAME", "dbrks-eo-analytics-demo")
+CATALOG = os.environ.get("CATALOG", "bldemos")
+SCHEMA = os.environ.get("SCHEMA", "eo_analytics")
 
 
 def escape_ident(name: str) -> str:

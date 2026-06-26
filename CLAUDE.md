@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Enterprise Root Cause Intelligence — a Databricks App that correlates OpenTelemetry signals across infrastructure, applications, and network domains for HLS (healthcare) environments. Built for a JnJ Enterprise Observability demo.
+Enterprise Root Cause Intelligence — a Databricks App that correlates OpenTelemetry signals across infrastructure, applications, and network domains for HLS (healthcare) environments. Built for a Dbrks Enterprise Observability demo.
 
 ## Repository Layout
 
@@ -17,7 +17,7 @@ Enterprise Root Cause Intelligence — a Databricks App that correlates OpenTele
 
 - **Frontend**: React 18 SPA (Vite, JSX) in `rca_app/frontend/` — Recharts for charts, Canvas for topology, Lucide icons, react-router-dom for routing
 - **Backend**: FastAPI in `rca_app/backend/` — serves the API at `/api/*` and the built React SPA as static files
-- **Data**: Databricks SQL Warehouse via `databricks-sdk` — queries Unity Catalog Delta tables in configurable catalog/schema (default `bx4.eo_analytics_plane`, Bronze/Silver/Gold medallion)
+- **Data**: Databricks SQL Warehouse via `databricks-sdk` — queries Unity Catalog Delta tables in configurable catalog/schema (default `bldemos.eo_analytics`, Bronze/Silver/Gold medallion)
 - **AI**: Databricks Foundation Model API (`databricks-claude-sonnet-4` via serving endpoint) for root cause analysis; Genie Space for natural language queries with keyword-based SQL fallback
 - **Deployment**: Databricks Apps via `databricks.yml` (DABs bundle), `rca_app/app.yaml` for runtime config
 
@@ -25,7 +25,7 @@ Enterprise Root Cause Intelligence — a Databricks App that correlates OpenTele
 
 - `rca_app/app.py` — Uvicorn entry point, loads `.env` via python-dotenv, imports `backend.main:app`
 - `rca_app/backend/main.py` — FastAPI app setup, CORS, router registration, SPA catch-all
-- `rca_app/backend/db.py` — Databricks SQL connection: reads `CATALOG`/`SCHEMA` from env vars (defaults `bx4`/`eo_analytics_plane`), auto-detects local dev (profile-based) vs deployed App (service principal via `DATABRICKS_APP_NAME`). Warehouse discovery prefers serverless, then running.
+- `rca_app/backend/db.py` — Databricks SQL connection: reads `CATALOG`/`SCHEMA` from env vars (defaults `bldemos`/`eo_analytics`), auto-detects local dev (profile-based) vs deployed App (service principal via `DATABRICKS_APP_NAME`). Warehouse discovery prefers serverless, then running.
 - `rca_app/backend/routes/` — API route modules: `incidents`, `root_cause` (includes LLM analysis with fallback), `service_ranking`, `change_correlation`, `domain_summary`, `genie` (proxies Genie Space API with SQL fallback)
 
 ### Frontend Structure

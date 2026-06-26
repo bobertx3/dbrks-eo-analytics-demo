@@ -2,21 +2,21 @@
 # MAGIC %sql
 # MAGIC -- Gold Layer Transforms for Enterprise RCA Intelligence Pipeline
 # MAGIC -- Creates 5 analytics-ready gold tables from silver data
-# MAGIC -- Run against: bx4.eo_analytics_plane
+# MAGIC -- Run against: bldemos.eo_analytics
 # MAGIC --
-# MAGIC -- Updated for JnJ business unit schema with:
+# MAGIC -- Updated for Dbrks business unit schema with:
 # MAGIC --   business_unit, total_affected_users, servicenow_tickets, revenue_model
 # MAGIC -- New table: gold_business_impact_summary
 # MAGIC
 # MAGIC -- ============================================================================
 # MAGIC -- gold_root_cause_patterns: Recurring failure pattern analysis
 # MAGIC -- ============================================================================
-# MAGIC CREATE OR REPLACE TABLE bx4.eo_analytics_plane.gold_root_cause_patterns AS
+# MAGIC CREATE OR REPLACE TABLE bldemos.eo_analytics.gold_root_cause_patterns AS
 # MAGIC WITH impacted_services_agg AS (
 # MAGIC   SELECT
 # MAGIC     failure_pattern_id,
 # MAGIC     collect_set(svc) as all_impacted_services
-# MAGIC   FROM bx4.eo_analytics_plane.silver_incidents
+# MAGIC   FROM bldemos.eo_analytics.silver_incidents
 # MAGIC   LATERAL VIEW explode(impacted_services) explode_svc AS svc
 # MAGIC   WHERE failure_pattern_id IS NOT NULL
 # MAGIC   GROUP BY failure_pattern_id
@@ -51,7 +51,7 @@
 # MAGIC     first(revenue_model) as revenue_model,
 # MAGIC     first(root_cause_explanation) as root_cause_explanation,
 # MAGIC     collect_set(root_service) as affected_root_services
-# MAGIC   FROM bx4.eo_analytics_plane.silver_incidents
+# MAGIC   FROM bldemos.eo_analytics.silver_incidents
 # MAGIC   WHERE failure_pattern_id IS NOT NULL
 # MAGIC   GROUP BY failure_pattern_id, failure_pattern_name, root_service, domain
 # MAGIC ),
@@ -61,7 +61,7 @@
 # MAGIC     WEEKOFYEAR(created_at) as week_num,
 # MAGIC     YEAR(created_at) as year_num,
 # MAGIC     COUNT(*) as weekly_count
-# MAGIC   FROM bx4.eo_analytics_plane.silver_incidents
+# MAGIC   FROM bldemos.eo_analytics.silver_incidents
 # MAGIC   WHERE failure_pattern_id IS NOT NULL
 # MAGIC   GROUP BY failure_pattern_id, WEEKOFYEAR(created_at), YEAR(created_at)
 # MAGIC ),
@@ -109,7 +109,7 @@
 # MAGIC -- ============================================================================
 # MAGIC -- gold_service_risk_ranking: Composite risk scoring per service
 # MAGIC -- ============================================================================
-# MAGIC CREATE OR REPLACE TABLE bx4.eo_analytics_plane.gold_service_risk_ranking AS
+# MAGIC CREATE OR REPLACE TABLE bldemos.eo_analytics.gold_service_risk_ranking AS
 # MAGIC WITH incident_stats AS (
 # MAGIC   SELECT
 # MAGIC     root_service as service_name,
@@ -126,14 +126,14 @@
 # MAGIC     SUM(CASE WHEN sla_breached THEN 1 ELSE 0 END) as sla_breaches,
 # MAGIC     COUNT(DISTINCT failure_pattern_id) as unique_failure_patterns,
 # MAGIC     AVG(impact_score) as avg_impact_score
-# MAGIC   FROM bx4.eo_analytics_plane.silver_incidents
+# MAGIC   FROM bldemos.eo_analytics.silver_incidents
 # MAGIC   GROUP BY root_service
 # MAGIC ),
 # MAGIC impacted_stats AS (
 # MAGIC   SELECT
 # MAGIC     svc as service_name,
 # MAGIC     COUNT(*) as times_impacted
-# MAGIC   FROM bx4.eo_analytics_plane.silver_incidents
+# MAGIC   FROM bldemos.eo_analytics.silver_incidents
 # MAGIC   LATERAL VIEW explode(impacted_services) t AS svc
 # MAGIC   GROUP BY svc
 # MAGIC ),
@@ -144,7 +144,7 @@
 # MAGIC     MIN(health_score) as min_health_score,
 # MAGIC     AVG(error_rate_pct) as avg_error_rate,
 # MAGIC     AVG(avg_cpu_pct) as avg_cpu
-# MAGIC   FROM bx4.eo_analytics_plane.silver_service_health
+# MAGIC   FROM bldemos.eo_analytics.silver_service_health
 # MAGIC   GROUP BY service_name
 # MAGIC ),
 # MAGIC change_stats AS (
@@ -152,7 +152,7 @@
 # MAGIC     service,
 # MAGIC     COUNT(*) as total_changes,
 # MAGIC     SUM(incidents_within_4h) as changes_followed_by_incidents
-# MAGIC   FROM bx4.eo_analytics_plane.silver_changes
+# MAGIC   FROM bldemos.eo_analytics.silver_changes
 # MAGIC   GROUP BY service
 # MAGIC )
 # MAGIC SELECT
@@ -204,7 +204,7 @@
 # MAGIC -- ============================================================================
 # MAGIC -- gold_change_incident_correlation: Change-incident causal analysis
 # MAGIC -- ============================================================================
-# MAGIC CREATE OR REPLACE TABLE bx4.eo_analytics_plane.gold_change_incident_correlation AS
+# MAGIC CREATE OR REPLACE TABLE bldemos.eo_analytics.gold_change_incident_correlation AS
 # MAGIC WITH change_incident_pairs AS (
 # MAGIC   SELECT
 # MAGIC     c.change_id,
@@ -231,8 +231,8 @@
 # MAGIC       WHEN TIMESTAMPDIFF(MINUTE, c.executed_at, i.created_at) <= 480 THEN 'delayed'
 # MAGIC       ELSE 'long_delay'
 # MAGIC     END as correlation_window
-# MAGIC   FROM bx4.eo_analytics_plane.silver_changes c
-# MAGIC   JOIN bx4.eo_analytics_plane.silver_incidents i
+# MAGIC   FROM bldemos.eo_analytics.silver_changes c
+# MAGIC   JOIN bldemos.eo_analytics.silver_incidents i
 # MAGIC     ON i.created_at BETWEEN c.executed_at AND c.executed_at + INTERVAL 24 HOURS
 # MAGIC     AND (i.root_service = c.service OR array_contains(i.impacted_services, c.service))
 # MAGIC ),
@@ -270,7 +270,7 @@
 # MAGIC -- ============================================================================
 # MAGIC -- gold_domain_impact_summary: Daily domain-level impact aggregation
 # MAGIC -- ============================================================================
-# MAGIC CREATE OR REPLACE TABLE bx4.eo_analytics_plane.gold_domain_impact_summary AS
+# MAGIC CREATE OR REPLACE TABLE bldemos.eo_analytics.gold_domain_impact_summary AS
 # MAGIC WITH domain_incidents AS (
 # MAGIC   SELECT
 # MAGIC     domain,
@@ -288,7 +288,7 @@
 # MAGIC     SUM(CASE WHEN sla_breached THEN 1 ELSE 0 END) as sla_breaches,
 # MAGIC     collect_set(root_service) as affected_services,
 # MAGIC     collect_set(failure_pattern_id) as failure_patterns
-# MAGIC   FROM bx4.eo_analytics_plane.silver_incidents
+# MAGIC   FROM bldemos.eo_analytics.silver_incidents
 # MAGIC   GROUP BY domain, DATE(created_at), MONTH(created_at), YEAR(created_at)
 # MAGIC ),
 # MAGIC domain_alerts AS (
@@ -298,7 +298,7 @@
 # MAGIC     COUNT(*) as alert_count,
 # MAGIC     SUM(CASE WHEN severity = 'critical' THEN 1 ELSE 0 END) as critical_alert_count,
 # MAGIC     SUM(CASE WHEN is_pre_incident_signal THEN 1 ELSE 0 END) as pre_incident_signals
-# MAGIC   FROM bx4.eo_analytics_plane.silver_alerts
+# MAGIC   FROM bldemos.eo_analytics.silver_alerts
 # MAGIC   GROUP BY domain, DATE(fired_at)
 # MAGIC ),
 # MAGIC domain_changes AS (
@@ -308,7 +308,7 @@
 # MAGIC     COUNT(*) as change_count,
 # MAGIC     SUM(CASE WHEN risk_level = 'high' THEN 1 ELSE 0 END) as high_risk_changes,
 # MAGIC     SUM(incidents_within_4h) as changes_causing_incidents
-# MAGIC   FROM bx4.eo_analytics_plane.silver_changes
+# MAGIC   FROM bldemos.eo_analytics.silver_changes
 # MAGIC   GROUP BY domain, DATE(executed_at)
 # MAGIC )
 # MAGIC SELECT
@@ -351,7 +351,7 @@
 # MAGIC -- ============================================================================
 # MAGIC -- gold_business_impact_summary: Per-business-unit aggregation (NEW)
 # MAGIC -- ============================================================================
-# MAGIC CREATE OR REPLACE TABLE bx4.eo_analytics_plane.gold_business_impact_summary AS
+# MAGIC CREATE OR REPLACE TABLE bldemos.eo_analytics.gold_business_impact_summary AS
 # MAGIC SELECT
 # MAGIC   i.business_unit,
 # MAGIC   COUNT(*) as total_incidents,
@@ -371,6 +371,6 @@
 # MAGIC   COUNT(DISTINCT i.failure_pattern_id) as unique_failure_patterns,
 # MAGIC   COUNT(DISTINCT i.root_service) as affected_services_count,
 # MAGIC   current_timestamp() as computed_at
-# MAGIC FROM bx4.eo_analytics_plane.silver_incidents i
+# MAGIC FROM bldemos.eo_analytics.silver_incidents i
 # MAGIC GROUP BY i.business_unit
 # MAGIC ORDER BY total_revenue_impact DESC;

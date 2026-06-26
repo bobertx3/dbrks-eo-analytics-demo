@@ -106,7 +106,7 @@ export default function App() {
           fontSize: '0.7rem',
           color: 'var(--color-text-muted)',
         }}>
-          <div>JnJ Enterprise Observability</div>
+          <div>Dbrks Enterprise Observability</div>
           <div style={{ marginTop: 2 }}>OpenTelemetry + Databricks</div>
         </div>
       </aside>

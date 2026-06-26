@@ -26,6 +26,7 @@ databricks bundle deploy \
   --var "volume=${VOLUME:-}" \
   --var "vs_index=${VS_INDEX:-}" \
   --var "app_name=${APP_NAME:-}" \
+  --var "lakebase_instance_name=${LAKEBASE_INSTANCE_NAME:-}" \
   --var "serving_endpoint=${SERVING_ENDPOINT:-}" \
   --var "databricks_token=${DATABRICKS_TOKEN:-}" \
   --var "warehouse_id=${DATABRICKS_WAREHOUSE_ID:-}" \

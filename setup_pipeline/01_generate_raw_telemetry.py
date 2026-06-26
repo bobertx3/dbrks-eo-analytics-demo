@@ -1,6 +1,6 @@
 """
 data_setup/01_generate_raw_telemetry.py
-Generates realistic JnJ-style OpenTelemetry data organized by business unit:
+Generates realistic Dbrks-style OpenTelemetry data organized by business unit:
   - OTLP Metrics (Protobuf .pb) -- 15 files, one per service batch
   - Structured Logs (JSONL) -- 12 files, ~15 days per file
   - Distributed Traces (JSON) -- 10 files, grouped by service cluster
@@ -22,8 +22,8 @@ from datetime import datetime, timedelta, timezone
 from databricks.sdk import WorkspaceClient
 
 PROFILE = os.environ.get("DATABRICKS_PROFILE", "DEFAULT")
-CATALOG = "jnj_eo_demo"
-SCHEMA = "eo_analytics_plane"
+CATALOG = os.environ.get("CATALOG", "bldemos")
+SCHEMA = os.environ.get("SCHEMA", "eo_analytics")
 VOLUME_PATH = f"/Volumes/{CATALOG}/{SCHEMA}/raw_landing"
 
 
@@ -54,7 +54,7 @@ def raw_volume_has_data(w):
 
 
 # ============================================================================
-# BUSINESS UNITS & SERVICE CATALOG  (JnJ-style)
+# BUSINESS UNITS & SERVICE CATALOG  (Dbrks-style)
 # ============================================================================
 
 BUSINESS_UNITS = {
@@ -573,9 +573,9 @@ def make_resource_attrs(service_name):
     bu = SERVICE_TO_BU.get(service_name, "shared-infrastructure")
     return {
         "service.name": service_name,
-        "service.namespace": "jnj-enterprise",
+        "service.namespace": "dbrks-enterprise",
         "service.instance.id": instance_id,
-        "host.name": f"{instance_id}.internal.jnj.net",
+        "host.name": f"{instance_id}.internal.dbrks.net",
         "deployment.environment": random.choice(ENVIRONMENTS),
         "cloud.region": random.choice(REGIONS),
         "cloud.provider": "aws",
