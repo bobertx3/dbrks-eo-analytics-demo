@@ -67,7 +67,7 @@ app.include_router(genie_router)
 
 @app.get("/api/health")
 async def health_check():
-    return {"status": "healthy", "app": "jnj-eo-analytics-demo", "version": "1.0.0"}
+    return {"status": "healthy", "app": "dbrks-eo-analytics-demo", "version": "1.0.0"}
 
 
 @app.exception_handler(Exception)

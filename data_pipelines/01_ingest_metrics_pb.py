@@ -9,7 +9,7 @@
 # MAGIC ## Protobuf Schema
 # MAGIC The binary files conform to the OTLP `MetricsData` message defined in:
 # MAGIC ```
-# MAGIC /Volumes/jnj_eo_demo/eo_analytics_plane/raw_landing/metrics/otlp_metrics.proto
+# MAGIC /Volumes/bldemos/eo_analytics/raw_landing/metrics/otlp_metrics.proto
 # MAGIC ```
 # MAGIC Key message hierarchy:
 # MAGIC ```
@@ -45,8 +45,8 @@ from pyspark.sql.types import (
     StructType, StructField, StringType, DoubleType, LongType, TimestampType
 )
 
-CATALOG      = "bx4"
-SCHEMA       = "eo_analytics_plane"
+CATALOG = os.environ.get("CATALOG", "bldemos")
+SCHEMA       = "eo_analytics"
 VOLUME_PATH  = f"/Volumes/{CATALOG}/{SCHEMA}/raw_landing"
 METRICS_PATH = f"{VOLUME_PATH}/metrics"
 PROTO_PATH   = f"{METRICS_PATH}/otlp_metrics.proto"

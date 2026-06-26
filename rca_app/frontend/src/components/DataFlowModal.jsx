@@ -41,7 +41,7 @@ const PIPELINE = [
   {
     id: 'lakebase', label: 'Lakebase', sub: 'PostgreSQL Sync',
     color: '#bc8cff',
-    tables: ['12 synced tables', 'eo_lakebase schema', 'OAuth auth'],
+    tables: ['12 synced tables', 'eo_analytics schema', 'OAuth auth'],
   },
   {
     id: 'app', label: 'RCA App', sub: 'FastAPI + React',

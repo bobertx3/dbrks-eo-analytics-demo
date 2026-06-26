@@ -8,6 +8,7 @@
 
 # COMMAND ----------
 
+import os
 import struct
 from datetime import datetime, timezone
 
@@ -22,8 +23,8 @@ from pyspark.sql.types import (
     TimestampType,
 )
 
-CATALOG = "bx4"
-SCHEMA = "eo_analytics_plane"
+CATALOG = os.environ.get("CATALOG", "bldemos")
+SCHEMA = os.environ.get("SCHEMA", "eo_analytics")
 VOLUME_PATH = f"/Volumes/{CATALOG}/{SCHEMA}/raw_landing"
 NETWORK_PATH = f"{VOLUME_PATH}/network_flows"
 TARGET_TABLE = f"{CATALOG}.{SCHEMA}.bronze_network_flows"

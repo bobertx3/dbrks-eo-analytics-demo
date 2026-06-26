@@ -1,11 +1,11 @@
 bundle:
-  name: jnj-eo-analytics-demo
+  name: dbrks-eo-analytics-demo
 
 variables:
   catalog:
-    default: bx4
+    default: bldemos
   schema:
-    default: eo_analytics_plane
+    default: eo_analytics
   table:
     default: ""
   volume:
@@ -13,21 +13,21 @@ variables:
   vs_index:
     default: ""
   app_name:
-    default: jnj-eo-analytics-demo
+    default: dbrks-eo-analytics-rca
   serving_endpoint:
     default: databricks-claude-sonnet-4
   databricks_token:
     default: ""
   warehouse_id:
-    default: 08381690ac2b0e1a
+    default: d119a93099e7209f
   genie_space_id:
-    default: 01f12b09e924156a8dd45ba78787ed15
+    default: "01f17125e8741df2b08f8188fb0877b2"
   lakebase_host:
-    default: ep-spring-forest-d2gs5o2y.database.us-east-1.cloud.databricks.com
+    default: ""
   lakebase_database:
     default: databricks_postgres
   lakebase_instance_name:
-    default: jnj-eo-analytics-demo
+    default: dbrks-eo-lb
   mailgun_api_url:
     default: "https://api.mailgun.net/v3/datakafe.com/messages"
   sender:
@@ -36,7 +36,7 @@ variables:
     default: "robert.leach@databricks.com"
 
 workspace:
-  host: https://fevm-stable-classic-zso77x-bx3.cloud.databricks.com
+  host: https://fevm-bobertx3-aws-fevm.cloud.databricks.com
   root_path: /Workspace/Users/robert.leach@databricks.com/${bundle.name}
 
 # All tasks use serverless compute — no cluster startup delay
@@ -45,7 +45,7 @@ resources:
 
   # ── Databricks App ─────────────────────────────────────────────────────────
   apps:
-    jnj-eo-analytics-demo:
+    dbrks-eo-analytics-demo:
       name: ${var.app_name}
       description: >
         Enterprise-Wide Root Cause Intelligence — correlating signals across
@@ -60,18 +60,12 @@ resources:
             value: ${var.catalog}
           - name: SCHEMA
             value: ${var.schema}
-          - name: TABLE
-            value: ${var.table}
           - name: VOLUME
             value: ${var.volume}
-          - name: VS_INDEX
-            value: ${var.vs_index}
           - name: APP_NAME
             value: ${var.app_name}
           - name: SERVING_ENDPOINT
             value: ${var.serving_endpoint}
-          - name: DATABRICKS_TOKEN
-            value: ${var.databricks_token}
           - name: DATABRICKS_WAREHOUSE_ID
             value_from: sql-warehouse
           - name: GENIE_SPACE_ID
@@ -104,16 +98,16 @@ resources:
 
   # ── Pipeline Job ───────────────────────────────────────────────────────────
   jobs:
-    jnj-eo-analytics-demo-setup:
-      name: jnj-eo-analytics-demo-setup
+    dbrks-eo-analytics-demo-setup:
+      name: dbrks-eo-analytics-demo-setup
       description: >
         Initializes schema/volume, loads static volume data, generates raw data
         only when needed, then builds bronze → silver → gold and app permissions.
 
       tags:
-        project: jnj-eo-analytics-demo
+        project: dbrks-eo-analytics-demo
         cost_center: CC-78432
-        manager: robert.leach@jnj.com
+        manager: robert.leach@dbrks.com
         owner: hls-platform-engineering
         job_type: setup
 
@@ -212,16 +206,16 @@ resources:
           spec:
             client: "1"
 
-    jnj-eo-analytics-demo-pipeline:
-      name: jnj-eo-analytics-demo-pipeline
+    dbrks-eo-analytics-demo-pipeline:
+      name: dbrks-eo-analytics-demo-pipeline
       description: >
         Ingests raw OpenTelemetry telemetry from Unity Catalog volume and
         builds bronze → silver → gold tables for the RCA Intelligence app.
 
       tags:
-        project: jnj-eo-analytics-demo
+        project: dbrks-eo-analytics-demo
         cost_center: CC-78432
-        manager: robert.leach@jnj.com
+        manager: robert.leach@dbrks.com
         owner: hls-platform-engineering
 
       schedule:

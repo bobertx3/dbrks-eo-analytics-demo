@@ -2,7 +2,7 @@
 
 ## System Overview
 
-Enterprise Root Cause Intelligence is a full-stack **Databricks App** that ingests OpenTelemetry signals (metrics, logs, traces, events, network flows) across infrastructure, application, and network domains, builds a Bronze/Silver/Gold medallion data model, and exposes an interactive React dashboard with AI-powered root cause analysis. Built for a JnJ Enterprise Observability demo targeting life sciences (HLS) environments.
+Enterprise Root Cause Intelligence is a full-stack **Databricks App** that ingests OpenTelemetry signals (metrics, logs, traces, events, network flows) across infrastructure, application, and network domains, builds a Bronze/Silver/Gold medallion data model, and exposes an interactive React dashboard with AI-powered root cause analysis. Built for a Dbrks Enterprise Observability demo targeting life sciences (HLS) environments.
 
 The system has three major parts: a **setup pipeline** that creates a Unity Catalog schema, generates synthetic data, and builds the medallion tables; a **data pipeline** (Databricks Job) that runs the same Bronze → Silver → Gold transforms on a schedule; and a **web application** (FastAPI + React) that queries the enriched tables and renders executive dashboards with AI-powered analysis.
 
@@ -140,8 +140,8 @@ The Bronze ingestion layer is format-aware — it includes custom protobuf decod
 
 | Field | Default | Purpose |
 |-------|---------|---------|
-| `CATALOG` | `bx4` | Unity Catalog catalog name |
-| `SCHEMA` | `eo_analytics_plane` | Unity Catalog schema name |
+| `CATALOG` | `bldemos` | Unity Catalog catalog name |
+| `SCHEMA` | `eo_analytics` | Unity Catalog schema name |
 | `DATABRICKS_PROFILE` | `DEFAULT` | CLI profile for local dev auth |
 | `DATABRICKS_WAREHOUSE_ID` | (auto-discover) | SQL warehouse ID; set via app resource binding in prod |
 | `DATABRICKS_APP_NAME` | (unset) | Presence triggers service principal auth path |
@@ -215,7 +215,7 @@ Proto schemas (`otlp_metrics.proto`, `network_flow.proto`) live alongside the da
 Databricks Workspace (fevm-stable-classic-zso77x-bx3)
 │
 ├── Unity Catalog
-│   └── bx4.eo_analytics_plane
+│   └── bldemos.eo_analytics
 │       ├── Volume: raw_landing/
 │       │   ├── metrics/        (OTLP .pb files)
 │       │   ├── logs/           (JSONL files)
@@ -238,7 +238,7 @@ Databricks Workspace (fevm-stable-classic-zso77x-bx3)
 │           gold_change_incident_correlation,
 │           gold_domain_impact_summary, gold_business_impact_summary
 │
-├── SQL Warehouse: 08381690ac2b0e1a (serverless)
+├── SQL Warehouse: d119a93099e7209f (serverless)
 │
 ├── Foundation Model API
 │   └── Serving endpoint: databricks-claude-sonnet-4
@@ -249,7 +249,7 @@ Databricks Workspace (fevm-stable-classic-zso77x-bx3)
 │   API: /api/2.0/genie/spaces/{id}/start-conversation
 │
 └── Databricks Apps
-    └── jnj-eo-analytics-demo (service principal auth)
+    └── dbrks-eo-analytics-demo (service principal auth)
 ```
 
 ---
@@ -320,7 +320,7 @@ Driven by `databricks.yml` (DABs bundle) at the repo root.
 databricks bundle deploy --profile DEFAULT
 
 # Run the data pipeline
-databricks bundle run jnj-eo-analytics-demo-pipeline --profile DEFAULT
+databricks bundle run dbrks-eo-analytics-demo-pipeline --profile DEFAULT
 
 # Or deploy with .env variable injection
 ./scripts/deploy_with_env.sh DEFAULT
@@ -331,7 +331,7 @@ databricks bundle run jnj-eo-analytics-demo-pipeline --profile DEFAULT
 | Field | Value |
 |-------|-------|
 | Target | `default` (production mode, no resource name prefix) |
-| Root path | `/Workspace/Users/robert.leach@databricks.com/jnj-eo-analytics-demo` |
+| Root path | `/Workspace/Users/robert.leach@databricks.com/dbrks-eo-analytics-demo` |
 | App source | `./rca_app` |
 | App command | `python app.py` |
 | Job schedule | `0 0 2 * * ?` UTC (PAUSED) |
@@ -360,7 +360,7 @@ python setup_pipeline/07_grant_app_uc_permissions.py
 ## Directory Structure
 
 ```
-jnj-eo-analytics-demo/
+dbrks-eo-analytics-demo/
 ├── databricks.yml                  # DABs bundle: app + pipeline job definition
 ├── README.md                       # Quick start and env var documentation
 ├── CLAUDE.md                       # Claude Code guidance

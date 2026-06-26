@@ -288,7 +288,7 @@ export default function GenieChat() {
             <Sparkles size={36} style={{ color: 'var(--color-accent)', marginBottom: 12 }} />
             <h2 className="genie-welcome-title">What do you want to investigate?</h2>
             <p className="genie-welcome-subtitle">
-              Ask about incidents, root causes, and business impact across JnJ domains
+              Ask about incidents, root causes, and business impact across Dbrks domains
             </p>
           </div>
         </div>

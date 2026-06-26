@@ -8,7 +8,7 @@ An enterprise-wide observability platform built on Databricks, ingesting OpenTel
 
 - **Frontend**: React 18 SPA (Vite) with Recharts/Canvas visualizations — lives in `rca_app/frontend/`
 - **Backend**: FastAPI serving `/api/*` endpoints — lives in `rca_app/backend/`
-- **Data**: Unity Catalog Delta tables in `bx4.eo_analytics_plane` (Bronze → Silver → Gold medallion)
+- **Data**: Unity Catalog Delta tables in `bldemos.eo_analytics` (Bronze → Silver → Gold medallion)
 - **AI**: Databricks Foundation Model API for explainable root cause analysis; Genie Space for natural language Q&A
 - **Deployment**: Databricks Apps via DABs (`databricks.yml`)
 
@@ -31,12 +31,12 @@ Edit `rca_app/.env` with your values:
 | Variable | Required | Description |
 |----------|----------|-------------|
 | `DATABRICKS_PROFILE` | Yes | Databricks CLI profile name from `~/.databrickscfg` |
-| `CATALOG` | Yes | Unity Catalog catalog name (e.g. `bx4`) |
-| `SCHEMA` | Yes | Schema name (e.g. `eo_analytics_plane`) |
+| `CATALOG` | Yes | Unity Catalog catalog name (e.g. `bldemos`) |
+| `SCHEMA` | Yes | Schema name (e.g. `eo_analytics`) |
 | `DATABRICKS_WAREHOUSE_ID` | No | SQL Warehouse ID — auto-discovers a running serverless warehouse if blank |
 | `SERVING_ENDPOINT` | No | Foundation Model API endpoint name (default: `databricks-claude-sonnet-4`) |
 | `GENIE_SPACE_ID` | No | Genie Space ID for natural language Q&A — falls back to SQL if blank |
-| `APP_NAME` | No | App name for deployment (default: `jnj-eo-analytics-demo`) |
+| `APP_NAME` | No | App name for deployment (default: `dbrks-eo-analytics-demo`) |
 | `VOLUME` | No | Volume name for raw data landing (default: `raw_landing`) |
 | `DATABRICKS_TOKEN` | No | Only needed if not using profile-based auth |
 
@@ -95,10 +95,10 @@ cd rca_app/frontend && npm run dev
 databricks bundle deploy --profile DEFAULT
 
 # Optional: run one-time setup orchestration job (schema/volume + medallion build)
-databricks bundle run jnj-eo-analytics-demo-setup --profile DEFAULT
+databricks bundle run dbrks-eo-analytics-demo-setup --profile DEFAULT
 
 # Kick off the data pipeline
-databricks bundle run jnj-eo-analytics-demo-pipeline --profile DEFAULT
+databricks bundle run dbrks-eo-analytics-demo-pipeline --profile DEFAULT
 ```
 
 Or use the helper script which injects `.env` values as DAB variable overrides:

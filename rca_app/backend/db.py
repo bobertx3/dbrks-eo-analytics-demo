@@ -14,16 +14,18 @@ from sqlalchemy.engine import Engine
 
 logger = logging.getLogger(__name__)
 
-CATALOG = os.environ.get("CATALOG", "bx4")
-SCHEMA = os.environ.get("SCHEMA", "eo_analytics_plane")
+CATALOG = os.environ.get("CATALOG", "bldemos")
+SCHEMA = os.environ.get("SCHEMA", "eo_analytics")
 
 IS_DATABRICKS_APP = bool(os.environ.get("DATABRICKS_APP_NAME"))
 
 # Lakebase connection settings
 LAKEBASE_HOST = os.environ.get("LAKEBASE_HOST", "")
 LAKEBASE_DATABASE = os.environ.get("LAKEBASE_DATABASE", "databricks_postgres")
-LAKEBASE_INSTANCE_NAME = os.environ.get("LAKEBASE_INSTANCE_NAME", "jnj-eo-analytics-demo")
-PG_SCHEMA = "eo_lakebase"
+LAKEBASE_INSTANCE_NAME = os.environ.get("LAKEBASE_INSTANCE_NAME", "dbrks-eo-lb")
+# Synced tables (script 08) land in the Postgres schema matching the UC schema.
+# Defaults to SCHEMA; override with PG_SCHEMA only if tables are synced elsewhere.
+PG_SCHEMA = os.environ.get("PG_SCHEMA", SCHEMA)
 
 
 def get_workspace_client() -> WorkspaceClient:

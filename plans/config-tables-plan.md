@@ -2,7 +2,7 @@
 
 **Status:** Planned — ready to implement
 **Created:** 2026-03-29
-**Location:** Config tables in `bx4.eo_analytics_plane`, synced to Lakebase
+**Location:** Config tables in `bldemos.eo_analytics`, synced to Lakebase
 
 ## Context
 

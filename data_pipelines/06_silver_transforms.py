@@ -2,9 +2,9 @@
 # MAGIC %sql
 # MAGIC -- Silver Layer Transforms for Enterprise RCA Intelligence Pipeline
 # MAGIC -- Creates 6 enriched silver tables from bronze data
-# MAGIC -- Run against: bx4.eo_analytics_plane
+# MAGIC -- Run against: bldemos.eo_analytics
 # MAGIC --
-# MAGIC -- Updated for JnJ business unit schema with:
+# MAGIC -- Updated for Dbrks business unit schema with:
 # MAGIC --   business_unit, affected_user_count, affected_roles, productivity_loss_*,
 # MAGIC --   shipments_delayed, servicenow_ticket_count/duplicate_tickets,
 # MAGIC --   downstream_impact_narrative, root_cause_explanation, revenue_model
@@ -13,7 +13,7 @@
 # MAGIC -- ============================================================================
 # MAGIC -- silver_incidents: Enriched incidents with business context and impact scoring
 # MAGIC -- ============================================================================
-# MAGIC CREATE OR REPLACE TABLE bx4.eo_analytics_plane.silver_incidents AS
+# MAGIC CREATE OR REPLACE TABLE bldemos.eo_analytics.silver_incidents AS
 # MAGIC SELECT
 # MAGIC   i.incident_id,
 # MAGIC   i.title,
@@ -60,17 +60,17 @@
 # MAGIC   WEEKOFYEAR(i.created_at) as incident_week,
 # MAGIC   (
 # MAGIC     SELECT collect_list(DISTINCT a.alert_name)
-# MAGIC     FROM bx4.eo_analytics_plane.bronze_alerts a
+# MAGIC     FROM bldemos.eo_analytics.bronze_alerts a
 # MAGIC     WHERE a.incident_id = i.incident_id
 # MAGIC   ) as correlated_alert_types,
 # MAGIC   (
 # MAGIC     SELECT COUNT(*)
-# MAGIC     FROM bx4.eo_analytics_plane.bronze_alerts a
+# MAGIC     FROM bldemos.eo_analytics.bronze_alerts a
 # MAGIC     WHERE a.incident_id = i.incident_id
 # MAGIC   ) as correlated_alert_count,
 # MAGIC   (
 # MAGIC     SELECT collect_list(struct(c.change_id, c.change_type, c.service, c.executed_at))
-# MAGIC     FROM bx4.eo_analytics_plane.bronze_topology_changes c
+# MAGIC     FROM bldemos.eo_analytics.bronze_topology_changes c
 # MAGIC     WHERE c.executed_at BETWEEN i.created_at - INTERVAL 2 HOURS AND i.created_at
 # MAGIC       AND (c.service = i.root_service OR array_contains(i.impacted_services, c.service))
 # MAGIC   ) as preceding_changes,
@@ -81,12 +81,12 @@
 # MAGIC     , 2
 # MAGIC   ) as impact_score,
 # MAGIC   current_timestamp() as enriched_at
-# MAGIC FROM bx4.eo_analytics_plane.bronze_incidents i;
+# MAGIC FROM bldemos.eo_analytics.bronze_incidents i;
 # MAGIC
 # MAGIC -- ============================================================================
 # MAGIC -- silver_alerts: Enriched alerts with breach analysis
 # MAGIC -- ============================================================================
-# MAGIC CREATE OR REPLACE TABLE bx4.eo_analytics_plane.silver_alerts AS
+# MAGIC CREATE OR REPLACE TABLE bldemos.eo_analytics.silver_alerts AS
 # MAGIC SELECT
 # MAGIC   a.alert_id,
 # MAGIC   a.incident_id,
@@ -111,19 +111,19 @@
 # MAGIC   CASE
 # MAGIC     WHEN a.incident_id IS NOT NULL THEN (
 # MAGIC       SELECT CASE WHEN a.fired_at < i.created_at THEN true ELSE false END
-# MAGIC       FROM bx4.eo_analytics_plane.bronze_incidents i
+# MAGIC       FROM bldemos.eo_analytics.bronze_incidents i
 # MAGIC       WHERE i.incident_id = a.incident_id
 # MAGIC       LIMIT 1
 # MAGIC     )
 # MAGIC     ELSE false
 # MAGIC   END as is_pre_incident_signal,
 # MAGIC   current_timestamp() as enriched_at
-# MAGIC FROM bx4.eo_analytics_plane.bronze_alerts a;
+# MAGIC FROM bldemos.eo_analytics.bronze_alerts a;
 # MAGIC
 # MAGIC -- ============================================================================
 # MAGIC -- silver_changes: Enriched changes with risk scoring
 # MAGIC -- ============================================================================
-# MAGIC CREATE OR REPLACE TABLE bx4.eo_analytics_plane.silver_changes AS
+# MAGIC CREATE OR REPLACE TABLE bldemos.eo_analytics.silver_changes AS
 # MAGIC SELECT
 # MAGIC   c.change_id,
 # MAGIC   c.service,
@@ -152,23 +152,23 @@
 # MAGIC     END as risk_score,
 # MAGIC   (
 # MAGIC     SELECT COUNT(*)
-# MAGIC     FROM bx4.eo_analytics_plane.bronze_incidents i
+# MAGIC     FROM bldemos.eo_analytics.bronze_incidents i
 # MAGIC     WHERE i.created_at BETWEEN c.executed_at AND c.executed_at + INTERVAL 4 HOURS
 # MAGIC       AND (i.root_service = c.service OR array_contains(i.impacted_services, c.service))
 # MAGIC   ) as incidents_within_4h,
 # MAGIC   (
 # MAGIC     SELECT COUNT(*)
-# MAGIC     FROM bx4.eo_analytics_plane.bronze_incidents i
+# MAGIC     FROM bldemos.eo_analytics.bronze_incidents i
 # MAGIC     WHERE i.created_at BETWEEN c.executed_at AND c.executed_at + INTERVAL 24 HOURS
 # MAGIC       AND (i.root_service = c.service OR array_contains(i.impacted_services, c.service))
 # MAGIC   ) as incidents_within_24h,
 # MAGIC   current_timestamp() as enriched_at
-# MAGIC FROM bx4.eo_analytics_plane.bronze_topology_changes c;
+# MAGIC FROM bldemos.eo_analytics.bronze_topology_changes c;
 # MAGIC
 # MAGIC -- ============================================================================
 # MAGIC -- silver_service_health: Daily composite health scores
 # MAGIC -- ============================================================================
-# MAGIC CREATE OR REPLACE TABLE bx4.eo_analytics_plane.silver_service_health AS
+# MAGIC CREATE OR REPLACE TABLE bldemos.eo_analytics.silver_service_health AS
 # MAGIC WITH daily_metrics AS (
 # MAGIC   SELECT
 # MAGIC     service_name,
@@ -177,7 +177,7 @@
 # MAGIC     AVG(metric_value) as avg_value,
 # MAGIC     MAX(metric_value) as max_value,
 # MAGIC     MIN(metric_value) as min_value
-# MAGIC   FROM bx4.eo_analytics_plane.bronze_metrics
+# MAGIC   FROM bldemos.eo_analytics.bronze_metrics
 # MAGIC   WHERE service_name IS NOT NULL
 # MAGIC   GROUP BY service_name, DATE(event_timestamp), metric_name
 # MAGIC ),
@@ -189,7 +189,7 @@
 # MAGIC     SUM(CASE WHEN severity = 'P1' THEN 1 ELSE 0 END) as p1_count,
 # MAGIC     SUM(blast_radius) as total_blast_radius,
 # MAGIC     AVG(mttr_minutes) as avg_mttr
-# MAGIC   FROM bx4.eo_analytics_plane.bronze_incidents
+# MAGIC   FROM bldemos.eo_analytics.bronze_incidents
 # MAGIC   GROUP BY root_service, DATE(created_at)
 # MAGIC ),
 # MAGIC daily_errors AS (
@@ -198,7 +198,7 @@
 # MAGIC     DATE(event_timestamp) as log_date,
 # MAGIC     COUNT(*) as total_logs,
 # MAGIC     SUM(CASE WHEN severity_text IN ('ERROR', 'FATAL') THEN 1 ELSE 0 END) as error_count
-# MAGIC   FROM bx4.eo_analytics_plane.bronze_logs
+# MAGIC   FROM bldemos.eo_analytics.bronze_logs
 # MAGIC   WHERE service_name IS NOT NULL
 # MAGIC   GROUP BY service_name, DATE(event_timestamp)
 # MAGIC )
@@ -246,7 +246,7 @@
 # MAGIC -- ============================================================================
 # MAGIC -- silver_business_impact: Business impact classification with revenue model
 # MAGIC -- ============================================================================
-# MAGIC CREATE OR REPLACE TABLE bx4.eo_analytics_plane.silver_business_impact AS
+# MAGIC CREATE OR REPLACE TABLE bldemos.eo_analytics.silver_business_impact AS
 # MAGIC SELECT
 # MAGIC   i.incident_id,
 # MAGIC   i.title,
@@ -284,12 +284,12 @@
 # MAGIC   MONTH(i.created_at) as impact_month,
 # MAGIC   YEAR(i.created_at) as impact_year,
 # MAGIC   current_timestamp() as computed_at
-# MAGIC FROM bx4.eo_analytics_plane.bronze_incidents i;
+# MAGIC FROM bldemos.eo_analytics.bronze_incidents i;
 # MAGIC
 # MAGIC -- ============================================================================
 # MAGIC -- silver_servicenow_correlation: ServiceNow ticket dedup analysis (NEW)
 # MAGIC -- ============================================================================
-# MAGIC CREATE OR REPLACE TABLE bx4.eo_analytics_plane.silver_servicenow_correlation AS
+# MAGIC CREATE OR REPLACE TABLE bldemos.eo_analytics.silver_servicenow_correlation AS
 # MAGIC SELECT
 # MAGIC   i.incident_id,
 # MAGIC   i.business_unit,
@@ -309,5 +309,5 @@
 # MAGIC   i.domain,
 # MAGIC   i.mttr_minutes,
 # MAGIC   i.created_at
-# MAGIC FROM bx4.eo_analytics_plane.bronze_incidents i
+# MAGIC FROM bldemos.eo_analytics.bronze_incidents i
 # MAGIC WHERE i.servicenow_ticket_count > 0;

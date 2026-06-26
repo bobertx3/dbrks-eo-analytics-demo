@@ -4,7 +4,7 @@
 
 # COMMAND ----------
 # MAGIC %sql
-# MAGIC CREATE OR REPLACE TABLE bx4.eo_analytics_plane.bronze_incidents AS
+# MAGIC CREATE OR REPLACE TABLE bldemos.eo_analytics.bronze_incidents AS
 # MAGIC SELECT
 # MAGIC   incident_id,
 # MAGIC   title,
@@ -37,11 +37,11 @@
 # MAGIC   root_cause_explanation,
 # MAGIC   revenue_model,
 # MAGIC   current_timestamp() as ingested_at
-# MAGIC FROM json.`/Volumes/bx4/eo_analytics_plane/raw_landing/events/incidents.jsonl`;
+# MAGIC FROM json.`/Volumes/bldemos/eo_analytics/raw_landing/events/incidents.jsonl`;
 
 # COMMAND ----------
 # MAGIC %sql
-# MAGIC CREATE OR REPLACE TABLE bx4.eo_analytics_plane.bronze_alerts AS
+# MAGIC CREATE OR REPLACE TABLE bldemos.eo_analytics.bronze_alerts AS
 # MAGIC SELECT
 # MAGIC   alert_id,
 # MAGIC   incident_id,
@@ -55,11 +55,11 @@
 # MAGIC   domain,
 # MAGIC   environment,
 # MAGIC   current_timestamp() as ingested_at
-# MAGIC FROM json.`/Volumes/bx4/eo_analytics_plane/raw_landing/events/alerts.jsonl`;
+# MAGIC FROM json.`/Volumes/bldemos/eo_analytics/raw_landing/events/alerts.jsonl`;
 
 # COMMAND ----------
 # MAGIC %sql
-# MAGIC CREATE OR REPLACE TABLE bx4.eo_analytics_plane.bronze_topology_changes AS
+# MAGIC CREATE OR REPLACE TABLE bldemos.eo_analytics.bronze_topology_changes AS
 # MAGIC SELECT
 # MAGIC   change_id,
 # MAGIC   service,
@@ -73,4 +73,4 @@
 # MAGIC   environment,
 # MAGIC   region,
 # MAGIC   current_timestamp() as ingested_at
-# MAGIC FROM json.`/Volumes/bx4/eo_analytics_plane/raw_landing/events/topology_changes.jsonl`;
+# MAGIC FROM json.`/Volumes/bldemos/eo_analytics/raw_landing/events/topology_changes.jsonl`;
